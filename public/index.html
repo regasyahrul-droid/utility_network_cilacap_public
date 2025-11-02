@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GridSight™ PLN — Dashboard Distribusi</title>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="./styles.css">
+
+  <!-- Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #061b33;
+      color: white;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 24px;
+      background: #072447;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .brand-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    .title-wrap {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      opacity: 0.75;
+    }
+
+    .container {
+      max-width: 1080px;
+      margin: 40px auto;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    .hero {
+      width: 100%;
+      max-width: 650px;
+      display: block;
+      margin: 0 auto 30px auto;
+      border-radius: 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: 28px;
+    }
+
+    .desc {
+      opacity: 0.75;
+      margin-bottom: 30px;
+    }
+
+    .kpi-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .kpi {
+      background: rgba(255,255,255,0.07);
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.1);
+      text-align: left;
+    }
+
+    .kpi-label {
+      opacity: 0.7;
+      font-size: 14px;
+    }
+
+    .kpi-value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
+    footer {
+      text-align: center;
+      opacity: 0.6;
+      padding: 25px;
+      font-size: 13px;
+    }
+
+    .btn {
+      background: #00a8ff;
+      border: none;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 15px;
+      color: white;
+      cursor: pointer;
+      margin-bottom: 25px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:active {
+      transform: scale(.97);
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <img src="./logo_pln.png" class="brand-logo" alt="PLN Logo">
+  <div class="title-wrap">
+    <div class="title">GridSight™</div>
+    <div class="subtitle">PLN Utility Intelligence Dashboard</div>
+  </div>
+</header>
+
+<div class="container">
+  
+  <img src="./hero_corporate.jpg" class="hero">
+
+  <h1>Dashboard Aset Distribusi</h1>
+  <div class="desc">
+    Tampilan publik tanpa peta, menampilkan KPI distribusi listrik.
+  </div>
+
+  <button class="btn" onclick="loadData()">
+    <i data-lucide="refresh-cw"></i> Refresh Data
+  </button>
+
+  <div id="kpiArea" class="kpi-box">
+    <div class="kpi">
+      <div class="kpi-label">Panjang JTM (km)</div>
+      <div class="kpi-value" id="kpi-jtm">—</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-label">Panjang JTR (km)</div>
+      <div class="kpi-value" id="kpi-jtr">—</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-label">Jumlah Pelanggan</div>
+      <div class="kpi-value" id="kpi-pel">—</div>
+    </div>
+  </div>
+
+  <br><br>
+  <div style="opacity:0.6">Versi publik — peta & dataset aktif tersedia di server internal.</div>
+
+</div>
+
+<footer>
+  © 2025 GridSight™ — Powered by PLN Intelligence
+</footer>
+
+<script src="./script.js"></script>
+<script>
+  lucide.createIcons();
+  loadData();
+</script>
+
+</body>
+</html>
