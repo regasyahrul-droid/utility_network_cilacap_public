@@ -1,254 +1,266 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>GridSight™ — PLN Utility Intelligence Dashboard</title>
-  <meta name="description" content="Public showcase WebGIS & KPI distribusi listrik berbasis cloud." />
-  <link rel="icon" href="logo_pln.png" />
-
+  <meta name="description" content="Public showcase WebGIS & KPI distribusi listrik berbasis cloud."/>
+  <link rel="icon" href="./public/logo_pln.png"/>
   <style>
     :root{
-      --bg:#061c2c;
-      --panel:#0d2b42;
-      --panel-2:#11354f;
-      --text:#eaf6ff;
-      --muted:#9ec3d8;
-      --brand:#58c4ff;
-      --brand-2:#60ffa8;
-      --chip:#0b2233;
-      --glass:rgba(13,43,66,.55);
+      --bg:#061b2a;
+      --bg2:#072233;
+      --nav:#0a2b43;
+      --text:#e7f6ff;
+      --muted:#9ec8dd;
+      --brand:#40c4ff;
+      --accent:#7df2ff;
+      --card:#0b2a41;
+      --glass: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      --ring: rgba(64,196,255,.55);
+      --shadow: 0 12px 26px rgba(0,0,0,.35);
     }
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial;
-      background: radial-gradient(1200px 600px at 15% -10%, #0f3a59 0%, transparent 60%) , var(--bg);
-      color:var(--text);
-    }
-    header{
-      position:sticky; top:0; z-index:10;
-      backdrop-filter:saturate(1.2) blur(8px);
-      background:linear-gradient(180deg, rgba(6,28,44,.95), rgba(6,28,44,.65));
-      border-bottom:1px solid rgba(255,255,255,.06);
-    }
-    .bar{
-      max-width:1200px; margin:auto; padding:14px 18px;
-      display:flex; align-items:center; gap:12px; justify-content:space-between;
-    }
-    .brand{display:flex; gap:10px; align-items:center}
-    .logo{width:32px; height:32px; border-radius:8px; background:#fff; padding:2px}
-    .ttl{font-weight:800; letter-spacing:.3px}
-    .sub{font-size:12px; color:var(--muted); margin-top:2px}
-
-    .theme-chip{
-      display:inline-flex; gap:8px; align-items:center;
-      background:linear-gradient(90deg, rgba(88,196,255,.18), rgba(96,255,168,.18));
-      color:#d8f3ff; border:1px solid rgba(255,255,255,.08);
-      padding:8px 12px; border-radius:999px; font-weight:700; font-size:13px;
-      box-shadow:0 6px 20px rgba(0,0,0,.35) inset, 0 1px 0 rgba(255,255,255,.06);
-    }
-
-    .wrap{max-width:1200px; margin:26px auto 60px; padding:0 18px}
-    .grid{display:grid; grid-template-columns:1.1fr .9fr; gap:18px}
-    .card{
-      background:linear-gradient(180deg, var(--panel), var(--panel-2));
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:14px; overflow:hidden;
-      box-shadow: 0 12px 30px rgba(0,0,0,.35);
-    }
-    .hero{
-      aspect-ratio: 16/12; width:100%;
-      object-fit:cover; display:block;
-      filter:saturate(1.05) contrast(1.02);
-    }
-
-    .right{padding:20px}
-    .badge{font-weight:900; letter-spacing:.16em; font-size:12px; color:#a6e7ff}
-    h1{margin:.25rem 0 10px 0; line-height:1.08}
-    .muted{color:var(--muted); margin-bottom:12px}
-
-    .kpis{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:12px 0}
-    .kpi{background:var(--glass); border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:14px}
-    .kpi .label{font-size:12px; color:#a8c8da; margin-bottom:6px}
-    .kpi .val{font-size:32px; font-weight:900; letter-spacing:.3px}
-
-    .note{color:#a8c8da; font-size:13px; border-top:1px dashed rgba(255,255,255,.12); padding-top:10px}
-
-    .globe-card{margin-top:14px; border-radius:12px; background:linear-gradient(180deg, #0e2b43, #0a2133); border:1px solid rgba(255,255,255,.06); overflow:hidden}
-    .globe-head{padding:12px 14px; border-bottom:1px solid rgba(255,255,255,.06); display:flex; align-items:center; justify-content:space-between}
-    .globe-title{font-weight:800}
-    .globe-slot{height:360px; position:relative}
-    #globe{position:absolute; inset:0}
-    .globe-fallback{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#97bed3}
-
-    .cta-row{margin-top:14px; display:flex; gap:10px; flex-wrap:wrap}
-    .btn{
-      appearance:none; border:0; cursor:pointer;
-      padding:10px 14px; border-radius:10px; font-weight:700; letter-spacing:.2px;
-      background:linear-gradient(90deg, #1a75ff, #00c3a5);
-      color:white; box-shadow:0 6px 20px rgba(0,0,0,.25);
-      text-decoration:none; display:inline-flex; align-items:center; gap:8px;
-    }
-    .btn.ghost{
-      background:transparent; color:#cfefff;
-      border:1px solid rgba(255,255,255,.14);
-    }
-
-    footer{margin:26px auto 60px; max-width:1200px; padding:0 18px; color:#9ec3d8}
-    footer .credit{display:flex; gap:8px; align-items:center; font-size:13px}
-    footer .credit strong{color:#e8fbff}
-    .sep{opacity:.35}
-
-    @media (max-width:900px){
-      .grid{grid-template-columns:1fr}
-      .hero{aspect-ratio:auto; height:340px}
-      .kpis{grid-template-columns:1fr}
-    }
+    html,body{margin:0;height:100%;background:radial-gradient(1000px 600px at 10% -10%, #0d3553 0%, #071f31 45%, #061b2a 100%), var(--bg); color:var(--text); font:15px/1.55 system-ui,Segoe UI,Roboto,Arial,sans-serif}
+    a{color:var(--brand);text-decoration:none}
+    .wrap{max-width:1180px;margin:0 auto;padding:20px}
+    /* header */
+    .hdr{position:sticky;top:0;z-index:5;background:linear-gradient(180deg, rgba(0,0,0,.35), transparent);backdrop-filter:saturate(130%) blur(6px)}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:12px 20px; background:var(--nav); border-bottom:1px solid rgba(255,255,255,.07)}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand img{width:32px;height:32px;border-radius:8px;background:#fff;object-fit:cover}
+    .brand .title{font-weight:800;letter-spacing:.2px}
+    .brand .sub{color:var(--muted);font-size:12px;margin-top:-2px}
+    .theme-pill{display:inline-flex;gap:8px;align-items:center;background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); color:#c8edff; padding:8px 12px; border-radius:999px; font-weight:700; box-shadow:var(--shadow)}
+    .theme-pill span{opacity:.9}
+    /* hero + panel */
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-top:16px}
+    .panel{background:var(--glass); border:1px solid rgba(255,255,255,.08); border-radius:16px; box-shadow:var(--shadow)}
+    .hero{overflow:hidden}
+    .hero img{display:block;width:100%;height:100%;object-fit:cover; aspect-ratio: 16/10;}
+    .card{padding:16px 16px 14px 16px}
+    .eyebrow{color:#a8d8ee;letter-spacing:.25em;font-weight:800;font-size:11px}
+    h1{margin:.35rem 0 8px 0;font-size:28px;line-height:1.15}
+    .muted{color:var(--muted)}
+    /* KPI */
+    .kpi{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:12px 0 8px}
+    .k{background:rgba(8,40,60,.66);border:1px solid rgba(255,255,255,.10);border-radius:12px;padding:12px}
+    .k small{color:#9fc6db;display:block;margin-bottom:6px}
+    .k b{font-size:26px;letter-spacing:.6px}
+    .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent); margin:10px 0}
+    /* globe */
+    .globe-card{margin-top:10px;background:rgba(8,40,60,.5);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px}
+    #globeCanvas{width:100%;height:260px;display:block;border-radius:10px;background:radial-gradient(900px 360px at -10% -20%, #114a6e 0%, #0a2f48 35%, #08283f 70%, #072133 100%)}
+    /* info cards */
+    .info-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}
+    .info{background:var(--glass);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px}
+    .info h3{margin:0 0 6px 0;font-size:16px;letter-spacing:.2px}
+    .info p{margin:0;color:#a8c8da;line-height:1.55}
+    .info ul{margin:6px 0 0 18px;color:#a8c8da;line-height:1.55}
+    .info .pill{display:inline-block;background:#0b2233;border:1px solid rgba(255,255,255,.10);padding:2px 8px;border-radius:999px;font-size:12px;color:#9fdcff;margin-right:6px}
+    @media (min-width:900px){ .info-grid{grid-template-columns:1fr 1fr 1fr} }
+    /* actions */
+    .row{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px;flex-wrap:wrap}
+    .left-note{font-size:12px;color:#a8c8da}
+    .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.15); background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.05)); padding:10px 12px;border-radius:10px;color:#dff5ff;font-weight:700}
+    .btn.primary{background:linear-gradient(180deg, #1aa6e6, #1784bd); border-color:#1aa6e6; color:#fff}
+    .btn.ghost{background:transparent}
+    .footer{opacity:.75;text-align:center;font-size:12px;margin:22px 0 30px}
   </style>
 </head>
 <body>
-  <header>
-    <div class="bar">
+  <!-- HEADER -->
+  <header class="hdr">
+    <div class="nav">
       <div class="brand">
-        <img src="logo_pln.png" class="logo" alt="PLN" />
+        <img src="./public/logo_pln.png" alt="PLN"/>
         <div>
-          <div class="ttl">GridSight™</div>
+          <div class="title">GridSight™</div>
           <div class="sub">PLN Utility Intelligence Dashboard</div>
         </div>
       </div>
-
-      <div class="theme-chip">Hybrid • Modern • Intelligent</div>
+      <div class="theme-pill"><span>Hybrid</span> • <span>Modern</span> • <span>Intelligent</span></div>
     </div>
   </header>
 
   <main class="wrap">
     <div class="grid">
-      <!-- LEFT: Hero -->
-      <div class="card">
-        <img src="hero_corporate.jpg" class="hero" alt="PLN Corporate Hero"/>
+      <!-- LEFT: HERO -->
+      <div class="panel hero">
+        <img src="./public/hero_corporate.jpg" alt="PLN Corporate"/>
       </div>
 
-      <!-- RIGHT: Copy + KPI + Globe + CTA -->
-      <div class="card right">
-        <div class="badge">SHOWCASE PUBLIK</div>
-        <h1>GridSight™ — PLN Utility<br/>Intelligence Dashboard</h1>
+      <!-- RIGHT: SUMMARY -->
+      <div class="panel card">
+        <div class="eyebrow">SHOWCASE PUBLIK</div>
+        <h1>GridSight™ — PLN Utility Intelligence Dashboard</h1>
         <div class="muted">Public showcase WebGIS & KPI distribusi listrik berbasis cloud.</div>
 
-        <div class="kpis">
-          <div class="kpi">
-            <div class="label">Panjang JTM (km)</div>
-            <div class="val" id="vJTM">431.27</div>
-          </div>
-          <div class="kpi">
-            <div class="label">Panjang JTR (km)</div>
-            <div class="val" id="vJTR">892.77</div>
-          </div>
-          <div class="kpi">
-            <div class="label">Jumlah Pelanggan</div>
-            <div class="val" id="vPEL">23,874</div>
-          </div>
+        <div class="kpi">
+          <div class="k"><small>Panjang JTM (km)</small><b id="jtmVal">431.27</b></div>
+          <div class="k"><small>Panjang JTR (km)</small><b id="jtrVal">892.77</b></div>
+          <div class="k"><small>Jumlah Pelanggan</small><b id="pelVal">23,874</b></div>
         </div>
 
-        <div class="note">
-          Versi publik — peta & dataset aktif tersedia pada server internal PLN.
+        <div class="row" style="margin-top:0">
+          <button id="refreshBtn" class="btn"><span>⟳</span> Refresh Data</button>
+          <span class="left-note">Versi publik — peta & dataset aktif tersedia di server internal PLN.</span>
         </div>
 
         <div class="globe-card">
-          <div class="globe-head">
-            <div class="globe-title">Interactive globe • cyber grid</div>
-            <div style="font-size:12px;color:#8fbdd3">render real-time • auto-rotate</div>
+          <canvas id="globeCanvas" aria-label="Interactive globe"></canvas>
+        </div>
+
+        <!-- Informational cards -->
+        <div class="info-grid">
+          <div class="info">
+            <h3>Tentang Dashboard</h3>
+            <p>
+              <span class="pill">Showcase Publik</span>
+              <span class="pill">Read-only</span>
+              <span class="pill">Cloud Friendly</span>
+            </p>
+            <p style="margin-top:8px">
+              Halaman ini menampilkan <b>KPI distribusi listrik</b> dan elemen branding WebGIS tanpa memuat data internal.
+              Versi operasional (internal) terhubung ke PostgreSQL/PostGIS & API Flask untuk perhitungan panjang jaringan
+              dan jumlah pelanggan berdasarkan extent peta.
+            </p>
           </div>
-          <div class="globe-slot">
-            <div id="globe" aria-label="interactive globe"></div>
-            <div class="globe-fallback" id="globeFallback" hidden>Memuat globe…</div>
+
+          <div class="info">
+            <h3>Ringkasan Aset</h3>
+            <ul>
+              <li><b>Pelanggan</b>: <span id="sumPel">23.874</span> titik (contoh)</li>
+              <li><b>JTM</b>: <span id="sumJtm">431,27</span> km &nbsp;•&nbsp; <b>JTR</b>: <span id="sumJtr">892,77</span> km</li>
+              <li><b>Area</b>: Wilayah Cilacap (subset showcase)</li>
+            </ul>
+            <p style="margin-top:6px">Nilai di atas dummy untuk publik; angka riil ditarik dari DB internal.</p>
+          </div>
+
+          <div class="info">
+            <h3>Potensi Pemanfaatan WebGIS</h3>
+            <ul>
+              <li>Monitoring panjang jaringan & pertumbuhan pelanggan per penyulang.</li>
+              <li>Validasi topologi Utility Network (snap, arah aliran, cabang isolasi).</li>
+              <li>Prioritisasi pemeliharaan & analisis gangguan berbasis spasial.</li>
+              <li>Integrasi Dashboard (Power BI) & bot notifikasi (Telegram / n8n).</li>
+            </ul>
           </div>
         </div>
 
-        <div class="cta-row">
-          <a class="btn" id="btnMap" target="_blank" rel="noopener">Lihat Map (Demo)</a>
-          <a class="btn ghost" href="#" onclick="refreshKPI();return false;">Refresh Data</a>
+        <!-- Actions -->
+        <div class="row">
+          <div class="left-note">Created by <b>Rega Syahrul</b></div>
+          <div style="display:flex;gap:8px">
+            <a class="btn ghost" href="https://github.com/regasyahrul-droid/utility_network_cilacap_public" target="_blank" rel="noopener">GitHub Repo</a>
+            <a class="btn primary" href="/project/cilacap/map" target="_blank" rel="noopener">Open Map</a>
+          </div>
         </div>
       </div>
     </div>
+
+    <div class="footer">© 2025 GridSight™ — Powered by PLN Intelligence</div>
   </main>
 
-  <footer>
-    <div class="credit">
-      <span>© 2025 GridSight™</span> <span class="sep">•</span>
-      <span>Powered by PLN Intelligence</span> <span class="sep">•</span>
-      <span>Created by <strong>Rega Syahrul</strong></span>
-    </div>
-  </footer>
-
-  <!-- Globe.gl CDN -->
-  <script src="https://unpkg.com/globe.gl@2.34.1/dist/globe.gl.min.js"></script>
   <script>
-    // ---- KPI Dummy refresh (tetap statis tapi animatif) ----
+    // —— Simple KPI refresher (dummy) ——
+    const fmt = n => Number(n).toLocaleString('id-ID', {minimumFractionDigits:2, maximumFractionDigits:2});
     function refreshKPI(){
-      const fmt = n => n.toLocaleString('id-ID', {maximumFractionDigits:2});
-      // dummy jitter biar terasa "live"
-      const jtm = 431.27 + (Math.random()-.5)*0.2;
-      const jtr = 892.77 + (Math.random()-.5)*0.3;
-      const pel = 23874 + Math.floor((Math.random()-.5)*20);
-      document.getElementById('vJTM').textContent = fmt(jtm);
-      document.getElementById('vJTR').textContent = fmt(jtr);
-      document.getElementById('vPEL').textContent = pel.toLocaleString('id-ID');
+      // generate angka realistis tapi dummy
+      const jtm = 380 + Math.random()*120;      // 380–500 km
+      const jtr = 820 + Math.random()*140;      // 820–960 km
+      const pel = 22000 + Math.floor(Math.random()*6000); // 22k–28k
+
+      document.getElementById('jtmVal').textContent = fmt(jtm);
+      document.getElementById('jtrVal').textContent = fmt(jtr);
+      document.getElementById('pelVal').textContent = pel.toLocaleString('id-ID');
+
+      // sinkron ke ringkasan aset
+      document.getElementById('sumJtm').textContent = fmt(jtm).replace('.',',');
+      document.getElementById('sumJtr').textContent = fmt(jtr).replace('.',',');
+      document.getElementById('sumPel').textContent = pel.toLocaleString('id-ID');
     }
+    document.getElementById('refreshBtn').addEventListener('click', refreshKPI);
 
-    // ---- Button Map (Demo) ----
+    // —— Lightweight canvas "globe" (no libs) ——
     (function(){
-      const btn = document.getElementById('btnMap');
-      // Kalau kamu sudah punya halaman map statis, ganti ke 'map.html'
-      const targetURL = 'map.html'; // ganti jika perlu
-      btn.href = targetURL;
-      btn.addEventListener('click', function(ev){
-        // Jika halaman belum ada, cegah 404
-        if (targetURL === '#' || targetURL === '' ) {
-          ev.preventDefault();
-          alert('Demo map belum tersedia pada versi publik.\n(Tetap aman: tidak memuat data internal)');
-        }
-      });
-    })();
+      const canvas = document.getElementById('globeCanvas');
+      const ctx = canvas.getContext('2d');
+      let w,h,r;
+      let t = 0;
 
-    // ---- Globe init & safety ----
-    (function initGlobe(){
-      const slot = document.getElementById('globe');
-      const fallback = document.getElementById('globeFallback');
-      try{
-        fallback.hidden = false;
-
-        const g = Globe()(slot)
-          .width(slot.clientWidth)
-          .height(slot.clientHeight)
-          .backgroundColor('rgba(0,0,0,0)')
-          .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-dark.jpg')
-          .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png');
-
-        // auto rotate
-        g.controls().autoRotate = true;
-        g.controls().autoRotateSpeed = 0.45;
-
-        // contoh titik cahaya (sekilas “grid”)
-        const pts = [];
-        for(let i=0;i<120;i++){
-          pts.push({ lat: -11 + Math.random()*20, lng: 105 + Math.random()*20, size: 0.6 + Math.random()*1.4, color: '#58c4ff' });
-        }
-        g.pointsData(pts).pointAltitude('size').pointColor('color').pointRadius(0.6);
-
-        // responsive
-        const onResize = () => {
-          const w = slot.clientWidth, h = slot.clientHeight;
-          g.width(w); g.height(h);
-        };
-        new ResizeObserver(onResize).observe(slot);
-
-        fallback.hidden = true;
-      }catch(err){
-        console.warn('Globe init error:', err);
-        fallback.textContent = 'Globe tidak dapat dimuat di browser ini.';
-        fallback.hidden = false;
+      function resize(){
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
+        w = canvas.clientWidth; h = canvas.clientHeight;
+        canvas.width = Math.floor(w*dpr); canvas.height = Math.floor(h*dpr);
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+        r = Math.min(w,h)*0.42;
       }
+      window.addEventListener('resize', resize, {passive:true});
+      resize();
+
+      function draw(){
+        ctx.clearRect(0,0,w,h);
+
+        // center
+        const cx = w*0.52, cy = h*0.55;
+
+        // halo
+        const g = ctx.createRadialGradient(cx,cy,r*0.6, cx,cy,r*1.15);
+        g.addColorStop(0, 'rgba(64,196,255,.15)');
+        g.addColorStop(1, 'rgba(64,196,255,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(cx,cy,r*1.15,0,Math.PI*2); ctx.fill();
+
+        // sphere
+        const sph = ctx.createRadialGradient(cx-r*0.35, cy-r*0.35, r*0.2, cx,cy, r);
+        sph.addColorStop(0, '#1d769c');
+        sph.addColorStop(1, '#0b3e5a');
+        ctx.fillStyle = sph;
+        ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
+
+        // grid lines
+        ctx.strokeStyle = 'rgba(180,240,255,.30)';
+        ctx.lineWidth = 1;
+
+        const meridians = 18, parallels = 9;
+        const rot = t*0.002; // rotation
+
+        // meridians
+        for(let i=0;i<meridians;i++){
+          const phi = i*(Math.PI*2/meridians)+rot;
+          ctx.beginPath();
+          for(let th=-Math.PI/2; th<=Math.PI/2; th+=0.07){
+            // 3D -> 2D (simple sphere parametric)
+            const x = r*Math.cos(th)*Math.cos(phi);
+            const y = r*Math.sin(th);
+            ctx.lineTo(cx+x, cy+y);
+          }
+          ctx.stroke();
+        }
+        // parallels
+        for(let j=1;j<parallels;j++){
+          const th = -Math.PI/2 + j*(Math.PI/parallels);
+          const ry = r*Math.sin(th);
+          const rx = r*Math.cos(th);
+          ctx.beginPath();
+          for(let phi=0; phi<=Math.PI*2+0.02; phi+=0.06){
+            const x = rx*Math.cos(phi+rot);
+            const y = ry;
+            ctx.lineTo(cx+x, cy+y);
+          }
+          ctx.stroke();
+        }
+
+        // glow ring
+        ctx.strokeStyle = 'rgba(125,242,255,.65)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+
+        t += 16;
+        requestAnimationFrame(draw);
+      }
+      draw();
     })();
   </script>
 </body>
