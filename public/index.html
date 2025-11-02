@@ -50,15 +50,20 @@
     .kpi .lbl{font-size:12px; color:var(--muted)}
     .kpi .val{font-size:28px; font-weight:800; letter-spacing:.5px; margin-top:2px}
     .note{font-size:12px; color:var(--muted); border-top:1px dashed rgba(255,255,255,.08); padding:10px 0 14px; margin-top:10px}
-    /* Globe */
+    .btn{display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:10px; font-weight:700; text-decoration:none; cursor:pointer; border:1px solid transparent}
+    .btn-map{background:linear-gradient(180deg,#9be8ff,#35c1ff); color:#072032; box-shadow:0 8px 24px rgba(53,193,255,.35);}
+    .btn-map:active{transform:translateY(1px)}
+    /* Globe (SVG) */
     .globe-wrap{position:relative; min-height:360px}
-    #globeCanvas{width:100%; height:100%; display:block; border-radius:var(--radius);
+    #globeSVG{width:100%; height:100%; display:block; border-radius:var(--radius);
       background:radial-gradient(120% 120% at 70% 20%, rgba(53,193,255,.08), rgba(0,0,0,.2));
       border:1px solid rgba(255,255,255,.06); box-shadow: var(--shadow), inset 0 0 40px rgba(53,193,255,.08);}
     .glow{position:absolute; inset:-2px; pointer-events:none; border-radius:var(--radius);
       box-shadow: 0 0 0 2px rgba(53,193,255,.15), inset 0 0 120px rgba(53,193,255,.10);}
     .globe-label{position:absolute; left:16px; bottom:10px; font-size:12px; color:var(--muted);
       background:rgba(8,20,30,.6); padding:6px 9px; border-radius:999px; border:1px solid rgba(255,255,255,.06)}
+    .spin { animation: spin 22s linear infinite; transform-origin: 50% 50%; }
+    @keyframes spin { to { transform: rotate(360deg); } }
     /* Sections */
     .section{max-width:1200px; margin:18px auto 24px; padding:0 18px}
     .card{background:linear-gradient(180deg, rgba(16,43,65,.9), rgba(12,35,54,.9));
@@ -102,17 +107,24 @@
         <div class="subtitle">Public showcase WebGIS & KPI distribusi listrik berbasis cloud.</div>
 
         <div class="kpi-row">
-          <div class="kpi"><div class="lbl">Panjang JTM (km)</div><div class="val" id="vJTM">431.27</div></div>
-          <div class="kpi"><div class="lbl">Panjang JTR (km)</div><div class="val" id="vJTR">892.77</div></div>
-          <div class="kpi"><div class="lbl">Jumlah Pelanggan</div><div class="val" id="vPEL">23,874</div></div>
+          <div class="kpi"><div class="lbl">Panjang JTM (km)</div><div class="val">431.27</div></div>
+          <div class="kpi"><div class="lbl">Panjang JTR (km)</div><div class="val">892.77</div></div>
+          <div class="kpi"><div class="lbl">Jumlah Pelanggan</div><div class="val">23,874</div></div>
         </div>
-        <div class="note">Versi publik — peta dan dataset aktif tersedia pada server internal PLN.</div>
+
+        <!-- Tombol menuju Google Earth – Cilacap -->
+        <a class="btn btn-map" href="https://earth.google.com/web/search/Cilacap,+Jawa+Tengah" target="_blank" rel="noopener">
+          🗺️ Buka Map (Google Earth – Cilacap)
+        </a>
+
+        <div class="note">Versi publik — peta & dataset aktif tersedia pada server internal PLN.</div>
       </div>
 
+      <!-- GLOBE SVG BARU -->
       <div class="globe-wrap" aria-hidden="true">
-        <canvas id="globeCanvas"></canvas>
+        <svg id="globeSVG" viewBox="0 0 600 360" role="img" aria-label="Animated wireframe globe"></svg>
         <div class="glow"></div>
-        <div class="globe-label">Interactive globe • cyber grid</div>
+        <div class="globe-label">Interactive globe • wireframe</div>
       </div>
     </div>
   </section>
@@ -151,130 +163,78 @@
     </div>
   </footer>
 
-  <!-- Canvas “Cyber Grid + Wireframe Sphere” -->
+  <!-- SVG Globe Builder -->
   <script>
-    (function(){
-      const cvs = document.getElementById('globeCanvas');
-      const ctx = cvs.getContext('2d');
+    (function buildSVGGlobe(){
+      const svg = document.getElementById('globeSVG');
+      const W = 600, H = 360, cx = 420, cy = 190, R = 120;
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
 
-      // sizing
-      function fit(){
-        const dpr = Math.max(1, window.devicePixelRatio||1);
-        const w = cvs.clientWidth, h = cvs.clientHeight;
-        cvs.width = Math.floor(w*dpr); cvs.height = Math.floor(h*dpr);
-        ctx.setTransform(dpr,0,0,dpr,0,0);
+      // Gradients
+      const defs = document.createElementNS('http://www.w3.org/2000/svg','defs');
+      const grad = document.createElementNS(defs.namespaceURI,'radialGradient');
+      grad.id = 'ocean';
+      grad.innerHTML = `
+        <stop offset="0%"  stop-color="#1fd1ff"/>
+        <stop offset="60%" stop-color="#0ca2d6"/>
+        <stop offset="100%" stop-color="#0b3954"/>
+      `;
+      defs.appendChild(grad);
+      svg.appendChild(defs);
+
+      // Sphere base
+      const base = document.createElementNS(svg.namespaceURI,'circle');
+      base.setAttribute('cx', cx); base.setAttribute('cy', cy); base.setAttribute('r', R);
+      base.setAttribute('fill','url(#ocean)'); base.setAttribute('opacity','.9');
+      base.setAttribute('stroke','rgba(255,255,255,.18)'); base.setAttribute('stroke-width','2');
+      svg.appendChild(base);
+
+      // Spinning wireframe group
+      const spin = document.createElementNS(svg.namespaceURI,'g'); spin.setAttribute('class','spin'); svg.appendChild(spin);
+
+      // Parallels (garis lintang)
+      const latCount = 9;
+      for(let i=1;i<latCount;i++){
+        const phi = -Math.PI/2 + (i*(Math.PI/latCount));
+        const ry = R * Math.cos(phi);
+        const ell = document.createElementNS(svg.namespaceURI,'ellipse');
+        ell.setAttribute('cx', cx); ell.setAttribute('cy', cy + R*Math.sin(phi)*0.05); // sedikit offset biar 3D
+        ell.setAttribute('rx', R); ell.setAttribute('ry', Math.max(2, ry*0.35));
+        ell.setAttribute('fill','none');
+        ell.setAttribute('stroke','#62f1ff'); ell.setAttribute('stroke-opacity','.65'); ell.setAttribute('stroke-width','1');
+        spin.appendChild(ell);
       }
-      window.addEventListener('resize', fit, {passive:true});
-      fit();
 
-      // palette
-      const line = '#62f1ff';
-      const faint = 'rgba(98,241,255,.25)';
-
-      // grid settings
-      const cols = 18, rows = 10;
-      const padding = 18;
-      const amp = 12;        // tinggi gelombang
-      const speed = 0.0022;  // kecepatan gelombang
-
-      // sphere settings
-      function draw(){
-        const w = cvs.clientWidth, h = cvs.clientHeight;
-        ctx.clearRect(0,0,w,h);
-
-        // --- Cyber grid (kiri) ---
-        const gw = Math.max(260, w*0.65);
-        const gh = h*0.75;
-        const gx = padding;
-        const gy = h - gh - padding*0.6;
-
-        // titik grid + gelombang
-        const pts = [];
-        for(let r=0; r<=rows; r++){
-          const row = [];
-          for(let c=0; c<=cols; c++){
-            const x = gx + (c/cols)*gw;
-            const z = c/cols;
-            const phase = (Date.now()*speed) + z*5 + r*0.4;
-            const y = gy + (r/rows)*gh + Math.sin(phase)*amp*(1 - z*0.6);
-            row.push({x,y});
-          }
-          pts.push(row);
-        }
-        // garis horizontal
-        ctx.strokeStyle = line;
-        ctx.lineWidth = 1;
-        for(let r=0;r<=rows;r++){
-          ctx.beginPath();
-          pts[r].forEach((p,i)=>{ i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); });
-          ctx.stroke();
-        }
-        // garis vertikal
-        for(let c=0;c<=cols;c++){
-          ctx.beginPath();
-          for(let r=0;r<=rows;r++){
-            const p = pts[r][c];
-            r?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);
-          }
-          ctx.stroke();
-        }
-
-        // --- Wireframe sphere (kanan) ---
-        const cx = w - Math.min(140, w*0.18);
-        const cy = Math.min(h*0.58, h-padding-70);
-        const R  = Math.min(h*0.28, 110);
-
-        // meridian & parallel
-        ctx.strokeStyle = line;
-        ctx.lineWidth = 1.2;
-
-        // meridians
-        const mCount = 16;
-        for(let i=0;i<mCount;i++){
-          const phi = i*Math.PI*2/mCount + Date.now()*0.0006;
-          ctx.beginPath();
-          for(let th=-Math.PI/2; th<=Math.PI/2; th+=0.06){
-            const x = R*Math.cos(th)*Math.cos(phi);
-            const y = R*Math.sin(th);
-            const px = cx + x, py = cy + y;
-            th===-Math.PI/2 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
-          }
-          ctx.stroke();
-        }
-        // parallels
-        const pCount = 9;
-        for(let j=1;j<pCount;j++){
-          const th = -Math.PI/2 + j*(Math.PI/pCount);
-          const ry = R*Math.sin(th), rx = R*Math.cos(th);
-          ctx.beginPath();
-          for(let a=0;a<=Math.PI*2+0.02;a+=0.06){
-            const px = cx + rx*Math.cos(a+Date.now()*0.0006);
-            const py = cy + ry;
-            a===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
-          }
-          ctx.stroke();
-        }
-
-        // glow ring
-        ctx.strokeStyle = faint; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(cx,cy,R+1.5,0,Math.PI*2); ctx.stroke();
-
-        // spikes (kilat listrik)
-        ctx.strokeStyle = line; ctx.lineWidth = 1.4;
-        const spikeN = 46;
-        for(let s=0;s<spikeN;s++){
-          const ang = (s/spikeN)*Math.PI*2 + Date.now()*0.001;
-          const len = 10 + 16*Math.abs(Math.sin(ang*3 + Date.now()*0.002));
-          const x1 = cx + (R-2)*Math.cos(ang);
-          const y1 = cy + (R-2)*Math.sin(ang);
-          const x2 = cx + (R+len)*Math.cos(ang);
-          const y2 = cy + (R+len)*Math.sin(ang);
-          ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
-        }
-
-        requestAnimationFrame(draw);
+      // Meridians (garis bujur) – ellipses diputar
+      const merCount = 16;
+      for(let k=0;k<merCount;k++){
+        const rot = (360/merCount)*k;
+        const mer = document.createElementNS(svg.namespaceURI,'ellipse');
+        mer.setAttribute('cx', cx); mer.setAttribute('cy', cy);
+        mer.setAttribute('rx', R);  mer.setAttribute('ry', R*0.65);
+        mer.setAttribute('fill','none');
+        mer.setAttribute('stroke','#62f1ff'); mer.setAttribute('stroke-opacity','.7'); mer.setAttribute('stroke-width','1.2');
+        mer.setAttribute('transform', `rotate(${rot} ${cx} ${cy})`);
+        spin.appendChild(mer);
       }
-      draw();
+
+      // Outer glow ring
+      const ring = document.createElementNS(svg.namespaceURI,'circle');
+      ring.setAttribute('cx', cx); ring.setAttribute('cy', cy); ring.setAttribute('r', R+4);
+      ring.setAttribute('fill','none'); ring.setAttribute('stroke','rgba(98,241,255,.3)'); ring.setAttribute('stroke-width','2');
+      svg.appendChild(ring);
+
+      // Electric ticks
+      for(let s=0;s<42;s++){
+        const a = (s/42)*Math.PI*2;
+        const x1 = cx + (R-2)*Math.cos(a), y1 = cy + (R-2)*Math.sin(a);
+        const len = 8 + (s%3)*4;
+        const x2 = cx + (R+len)*Math.cos(a), y2 = cy + (R+len)*Math.sin(a);
+        const t = document.createElementNS(svg.namespaceURI,'line');
+        t.setAttribute('x1',x1); t.setAttribute('y1',y1); t.setAttribute('x2',x2); t.setAttribute('y2',y2);
+        t.setAttribute('stroke','#62f1ff'); t.setAttribute('stroke-opacity','.55'); t.setAttribute('stroke-width','1.2');
+        svg.appendChild(t);
+      }
     })();
   </script>
 </body>
