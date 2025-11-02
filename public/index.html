@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>GridSight™ — PLN Utility Dashboard</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <script defer src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <header class="hdr">
+    <div class="brand">
+      <img src="public/logo_pln.png" class="logo" alt="PLN"/>
+      <div>
+        <div class="title">GridSight™</div>
+        <div class="sub">PLN Utility Intelligence Dashboard</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a class="btn disabled"><i data-lucide="map"></i> Map (Internal)</a>
+      <a class="btn" href="#" title="Contact"><i data-lucide="send"></i> Contact</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="copy">
+        <h1>Dashboard Aset Distribusi</h1>
+        <p>Tampilan publik tanpa peta, menunjukkan KPI distribusi listrik.</p>
+        <div class="actions">
+          <button class="btn primary" id="btnRefresh">
+            <i data-lucide="refresh-ccw"></i> Refresh Data
+          </button>
+        </div>
+      </div>
+      <div class="visual">
+        <img src="public/hero_corporate.jpg" class="heroimg" alt="PLN Corporate"/>
+      </div>
+    </section>
+
+    <section class="cards">
+      <div class="card">
+        <div class="card-title">Panjang JTM (km)</div>
+        <div id="statJTM" class="kpi">—</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Panjang JTR (km)</div>
+        <div id="statJTR" class="kpi">—</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Jumlah Pelanggan</div>
+        <div id="statPEL" class="kpi">—</div>
+      </div>
+    </section>
+
+    <section class="notes">
+      <div class="note">
+        Versi publik — peta & dataset aktif tersedia di server internal.
+      </div>
+    </section>
+  </main>
+
+  <footer class="ftr">
+    <div>© 2025 GridSight — Powered by PLN Intelligence</div>
+    <div>Created by Rega Syahrul</div>
+  </footer>
+
+  <script>
+    window.BACKEND_BASE_URL = "";
+  </script>
+
+  <script src="script.js"></script>
+</body>
+</html>
