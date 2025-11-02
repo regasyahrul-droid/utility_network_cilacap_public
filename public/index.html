@@ -3,14 +3,31 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>GridSight™ — PLN Utility Dashboard</title>
+  <title>GridSight™ — PLN Utility Intelligence Dashboard</title>
+
+  <!-- SEO/Share -->
+  <meta name="description" content="Dashboard publik PLN Utility Intelligence. Tampilan hybrid dengan globe interaktif dan KPI aset distribusi."/>
+  <meta property="og:title" content="GridSight — PLN Utility Intelligence"/>
+  <meta property="og:description" content="Hybrid corporate dashboard (public). Map hanya tersedia di server internal."/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:image" content="/public/og-cover.jpg"/>
+
   <link rel="stylesheet" href="styles.css"/>
   <script defer src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Globe libs (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script>
 </head>
-<body>
+<body data-theme="hybrid">
+  <!-- Loader ring -->
+  <div id="loader" class="loader">
+    <div class="ring"></div>
+  </div>
+
   <header class="hdr">
     <div class="brand">
-      <img src="public/logo_pln.png" class="logo" alt="PLN"/>
+      <img src="/public/logo_pln.png" class="logo" alt="PLN"/>
       <div>
         <div class="title">GridSight™</div>
         <div class="sub">PLN Utility Intelligence Dashboard</div>
@@ -18,38 +35,38 @@
     </div>
 
     <nav class="nav">
-      <a class="btn disabled"><i data-lucide="map"></i> Map (Internal)</a>
-      <a class="btn" href="#" title="Contact"><i data-lucide="send"></i> Contact</a>
+      <a class="btn" href="#"><i data-lucide="home"></i><span>Home</span></a>
+      <button class="btn disabled" title="Internal only"><i data-lucide="map"></i><span>Map</span></button>
+      <button id="themeBtn" class="btn swap" title="Switch Theme">
+        <i data-lucide="sparkles"></i><span>Hybrid</span>
+      </button>
     </nav>
   </header>
 
-  <main class="container">
-    <section class="hero">
-      <div class="copy">
-        <h1>Dashboard Aset Distribusi</h1>
-        <p>Tampilan publik tanpa peta, menunjukkan KPI distribusi listrik.</p>
-        <div class="actions">
-          <button class="btn primary" id="btnRefresh">
-            <i data-lucide="refresh-ccw"></i> Refresh Data
-          </button>
-        </div>
+  <!-- HERO dengan globe -->
+  <section class="hero">
+    <div class="copy">
+      <h1>Dashboard Aset Distribusi</h1>
+      <p>Tampilan publik tanpa peta. Hybrid corporate style dengan globe interaktif.</p>
+      <div class="actions">
+        <button class="btn primary" id="btnRefresh"><i data-lucide="refresh-ccw"></i>Refresh Data</button>
       </div>
-      <div class="visual">
-        <img src="public/hero_corporate.jpg" class="heroimg" alt="PLN Corporate"/>
-      </div>
-    </section>
+      <div class="tiny-note">Map & data real-time tersedia di server internal.</div>
+    </div>
+    <div id="globeHero" class="globe"></div>
+  </section>
 
+  <!-- KPI cards -->
+  <main class="container">
     <section class="cards">
       <div class="card">
         <div class="card-title">Panjang JTM (km)</div>
         <div id="statJTM" class="kpi">—</div>
       </div>
-
       <div class="card">
         <div class="card-title">Panjang JTR (km)</div>
         <div id="statJTR" class="kpi">—</div>
       </div>
-
       <div class="card">
         <div class="card-title">Jumlah Pelanggan</div>
         <div id="statPEL" class="kpi">—</div>
@@ -69,9 +86,8 @@
   </footer>
 
   <script>
-    window.BACKEND_BASE_URL = "";
+    window.BACKEND_BASE_URL = ""; // biarkan kosong (publik)
   </script>
-
   <script src="script.js"></script>
 </body>
 </html>
